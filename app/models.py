@@ -11,3 +11,13 @@ class Event(db.Model):
   required_people = db.Column(db.Integer)
   description = db.Column(db.Text)
 
+class User(db.Model):
+  id = db.Column(db.String, primary_key=True)
+  created = db.Column(db.DateTime, default=datetime.utcnow)
+  updated = db.Column(db.DateTime, default=datetime.utcnow,
+                      onupdate=datetime.utcnow)
+  name = db.Column(db.String)
+  profile_url = db.Column(db.String)
+  access_token = db.Column(db.String)
+  email = db.Column(db.String, unique=True)
+  phone = db.Column(db.String, unique=True)
