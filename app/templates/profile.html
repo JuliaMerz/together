@@ -1,0 +1,46 @@
+{% extends "base.html"%}
+
+{% block links %}
+<!--
+<link rel="stylesheet" href="/static/form_validator/dist/css/bootstrapValidator.min.css"/>
+--!>
+{% endblock %}
+
+{% block content %}
+
+  
+<p>
+  This is your profile. If you enter your email and phone number here, you'll get emails and text messages when events you have signed up for start.
+  </p>
+  <br>
+
+<form class="width-controlled" action="" method="post" name="edit" role="form">
+  {{form.hidden_tag()}}
+  <div class="form-group width-controlled">
+    <label for="email">Email address</label>
+    <input name="email" type="email" class="form-control" id="email" placeholder="{{user.email_template}}">
+  </div>
+  <div class="form-group width-controlled">
+    <label for="phone_number">Phone Number</label>
+    <input type="tel" name="phone_number" class="form-control" id="phone_number" placeholder="{{user.phone_template}}">
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+<!--
+<script type="text/javascript" src="/static/form_validator/dist/js/bootstrapValidator.js"></script>
+<script>
+  $(document).ready(function() {
+      $("form").bootstrapValidator({
+          excluded: ...,
+          feedbackIcons: ...,
+          live: 'enabled',
+          message: 'This value is not valid',
+          submitButtons: 'button[type="submit"]',
+          submitHandler: null,
+          trigger: null,
+          fields: ...
+      });
+  });
+</script>
+--!>
+{% endblock %}

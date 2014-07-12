@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 class Event(db.Model):
   id = db.Column(db.Integer, primary_key = True)
@@ -20,4 +21,4 @@ class User(db.Model):
   profile_url = db.Column(db.String)
   access_token = db.Column(db.String)
   email = db.Column(db.String, unique=True)
-  phone = db.Column(db.String, unique=True)
+  phone_number = db.Column(db.String, unique=True)

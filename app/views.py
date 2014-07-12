@@ -1,7 +1,8 @@
 from facebook import get_user_from_cookie, GraphAPI
-from flask import render_template
-
-from app import app
+from flask import render_template, g, flash, session, url_for, redirect, request
+from config import FB_APP_ID, FB_APP_NAME, FB_APP_SECRET
+from forms import ProfileForm
+from app import app, db
 
 @app.route('/')
 @app.route('/index')
@@ -12,17 +13,34 @@ def index():
   if g.user:
     if g.first_time:
       g.first_time = False
-      return redirect(url_for(profile))
+      return redirect(url_for("profile"))
   else:
-    return render_template('signin.html', app_id=FB_APP_ID, name=FB_APP_NAME)
+    return render_template('fbsignin.html', app_id=FB_APP_ID, name=FB_APP_NAME)
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 def profile():
   """
   Use this to let people change emails and phone numbers
   """
+  if g.user is None:
+    return redirect(url_for("index"))
 
-  return render_template("profile.html")
+  form = ProfileForm()
+  user = g.user
+  user = {"nickname":"Bob"}
+  if form.validate_on_submit():
+    g.user.email = form.email.data
+    g.user.phone_number = form.phone_number.data
+    db.session.add(g.user)
+    db.session.commit()
+    flash('Your changes have been saved')
+  user['email_template'] = "Please enter your email address"
+  user['phone_template'] = "Please enter your phone number"
+  if g.user.email:
+    user['email_template'] = g.user.email
+  if g.user.phone_number:
+    user['phone_template'] = g.user.phone_number
+  return render_template("profile.html", user = user, form=form)
 
 @app.before_request
 def get_current_user():
@@ -74,4 +92,3 @@ def get_current_user():
   # Commit changes to the database and set the user as a global g.user
   db.session.commit()
   g.user = session.get('user', None)
-
