@@ -56,5 +56,21 @@
       <p style="white-space: pre-wrap;">{{event.description}}</p>
     </div>
   </div>
-
+{% endblock %}
+{% block scripts %}
+  <script>
+    $("#attend_button").click(function(){
+        $.get("/attend/{{event.id}}",function(data,status){
+          if(data == 'OK') { 
+            $("h1+hr").after('\
+              <div class="alert alert-info alert-dismissible fade in" role="alert">\
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>\
+                You are signed up to attend. If people sign up in the next {{event.wait_time}}, {{event.what}} will occur.\
+              </div>');
+            }else{
+            alert("Data: " + data + "\nStatus: " + status);
+            }
+      });
+    });
+  </script>
 {% endblock %}

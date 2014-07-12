@@ -34,5 +34,5 @@ class EventSubscription(db.Model):
   attending = db.Column(db.SmallInteger, default=0)
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
   event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
-  access_count = db.Column(db.Integer)
+  signups = db.Column(db.Integer, default=0)
 

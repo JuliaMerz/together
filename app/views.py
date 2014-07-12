@@ -1,7 +1,8 @@
 from facebook import get_user_from_cookie, GraphAPI
+from twilio.rest import TwilioRestClient
 from datetime import datetime, timedelta
 from flask import render_template, g, flash, session, url_for, redirect, request
-from config import FB_APP_ID, FB_APP_NAME, FB_APP_SECRET
+from config import FB_APP_ID, FB_APP_NAME, FB_APP_SECRET, ACCOUNT_SID, AUTH_TOKEN, PHONE_NUMBER
 from forms import ProfileForm, EventForm
 from app import app, db
 from app import models
@@ -83,11 +84,6 @@ def logout():
 
 @app.route('/attend/<int:event_id>')
 def attend(event_id):
-  """
-  models.EventSubscription.query.filter(.timestamp_publication <=
-  sqlalchemy.sql.expression.current_timestamp()
-              )
-  """
   event = models.Event.query.get(event_id)
   user = models.User.query.get(g.user['id'])
   updated_sub = models.EventSubscription.query.filter_by(event=event, user=user).first()
@@ -97,12 +93,24 @@ def attend(event_id):
 
   now = datetime.utcnow()
   past = now-timedelta(minutes=event.wait_time)
-  results = models.EventSubscription.query.filter_by(event=event).filter(models.EventSubscription.updated >= past).all()
+  results = models.EventSubscription.query.filter_by(event=event).filter(models.EventSubscription.updated >= past).filter(models.EventSubscription.signups >= 1).all()
+  if len(results) >= event.required_people:
+    for result in results:
+      if result.user.phone_number:
+        "WHAT start at WHERE in WHEN minute!"
+        client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
+        body = event.what+ " will start at "+event.where+" in "+str(event.pre_delay)+" minutes!"
+        message = client.messages.create(to=result.user.phone_number, from_=PHONE_NUMBER, body=body)
+
+      if result.user.email:
+        pass
+
+  return 'OK'
 
 
 
-@app.route('/add_to_event/<int:user_id>')
-def add_to_event(user_id):
+@app.route('/add_to_event/<int:event_id>/<int:user_id>')
+def add_to_event(event_id, user_id):
   pass
 
 
