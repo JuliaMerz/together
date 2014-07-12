@@ -9,3 +9,6 @@ form {
 .width-controlled {
   max-width: 400px;
 }
+.width-controlled-wide {
+  max-width: 550px;
+}

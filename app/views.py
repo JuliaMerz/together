@@ -1,7 +1,7 @@
 from facebook import get_user_from_cookie, GraphAPI
 from flask import render_template, g, flash, session, url_for, redirect, request
 from config import FB_APP_ID, FB_APP_NAME, FB_APP_SECRET
-from forms import ProfileForm
+from forms import ProfileForm, EventForm
 from app import app, db
 from app import models
 
@@ -39,6 +39,32 @@ def profile():
     db.session.commit()
     flash('Your changes have been saved')
   return render_template("profile.html", app_id=FB_APP_ID, name=FB_APP_NAME, user = g.user, form=form)
+
+@app.route('/add_event', methods=['GET', 'POST'])
+def add_event():
+  form = EventForm()
+  if form.validate_on_submit():
+    what = form.what.data
+    where = form.where.data
+    length = form.length.data
+    wait_time = form.wait_time.data
+    pre_delay = form.pre_delay.data
+    required_people = form.required_people.data
+    description = form.description.data
+    event = models.Event(what=what, where=where, length=length, wait_time=wait_time, pre_delay=pre_delay, required_people=required_people, description=description)
+    db.session.add(event)
+    db.session.commit()
+    print event.id
+    flash("Event successfully created")
+    return redirect(url_for("event", id=event.id))
+  return render_template("add_event.html", app_id=FB_APP_ID, name=FB_APP_NAME, user = g.user, form=form) 
+
+@app.route('/event/<id>')
+def event(id):
+  if id is None:
+    return redirect(url_for('index'))
+  event = models.Event.query.get(id)
+  return render_template("event.html", app_id=FB_APP_ID, name=FB_APP_NAME, event=event)
 @app.route('/logout')
 def logout():
   """Log out the user from the application.

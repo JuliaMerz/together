@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>
+Add an event here!
+  </p>
+<form class="width-controlled-wide" action="" method="post" name="edit" role="form">
+  {{form.hidden_tag()}}
+  <div class="form-group width-controlled-wide">
+    <label for="what">Name</label>
+    <input name="what" type="text" class="form-control" id="what" placeholder="A concise description of the event.">
+  </div>
+  <div class="form-group width-controlled-wide">
+    <label for="where">Location</label>
+    <input type="text" name="where" class="form-control" id="where" placeholder="Where the event is held." >
+  </div>
+  <div class="form-group width-controlled-wide">
+    <label for="length">Duration</label>
+    <input type="text" name="length" class="form-control" id="length" placeholder="How long the event lasts (in minutes)." >
+  </div>
+  <div class="form-group width-controlled-wide">
+    <label for="wait_time">Sign Up Period</label>
+    <input type="text" name="wait_time" class="form-control" id="wait_time" placeholder="How long a signups lasts (in minutes)." >
+  </div>
+  <div class="form-group width-controlled-wide">
+    <label for="pre_delay">Delay</label>
+    <input type="text" name="pre_delay" class="form-control" id="pre_delay" placeholder="Delay before event starts after signups fill (in minutes)." >
+  </div>
+  <div class="form-group width-controlled-wide">
+    <label for="required_people">Number of People Needed</label>
+    <input type="text" name="required_people" class="form-control" id="required_people" placeholder="Number between 0 and 2,147,483,647" >
+  </div>
+  <div class="form-group width-controlled-wide">
+    <label for="description">Description</label>
+    <textarea id="description" name="description" class="form-control" rows="3" placeholder="A longer description of what the event is."></textarea>
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% endblock %}
