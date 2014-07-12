@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="row">
+    <div class="box-button col-md-4 col-sm-6 col-xs-12">
+      
+      <a href="#"><h4 id="attend_button"><span class="glyphicon glyphicon-ok"></span> Ready to Attend</h4></a>
+    </div>
+    <div id="details-title" class="col-md-4 hidden-xs hidden-sm">
+      <h2>Event Details</h2>
+    </div>
+    <div class="box-button col-md-4 col-sm-6 col-xs-12">
+      <a href="#"><h4 id="invite_button"><span class="glyphicon glyphicon-plus"></span>
+         Invite Friends to Event</h4></a>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 col-sm-6 info-box">
+      <h3>What</h3>
+      {{event.what}}
+    </div>
+    <div class="col-md-3 col-sm-6 info-box">
+      <h3>Where</h3>
+      {{event.where}}
+    </div>
+    <div class="col-md-3 col-sm-6 info-box">
+      <h3>Event Length</h3>
+      {{event.length}} minutes
+    </div>
+    <div class="col-md-3 col-sm-6 info-box">
+      <h3>Signup Timeout</h3>
+      {{event.wait_time}} minutes
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 col-sm-6 info-box">
+      <h3>Delay Before Start</h3>
+      {{event.pre_delay}} minutes
+    </div>
+    <div class="col-md-3 col-sm-6 info-box">
+      <h3>People Needed</h3>
+        {{event.required_people}} people
+    </div>
+    <div class="col-md-3 col-sm-6 info-box">
+      <h3>Created</h3>
+        {{event.created}}
+    </div>
+    <div class="col-md-3 col-sm-6 info-box">
+      <h3>Number of Times Held</h3>
+        {{event.happened_count}}
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <h3>Details </h3>
+      <p style="white-space: pre-wrap;">{{event.description}}</p>
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,4 +1,5 @@
 from facebook import get_user_from_cookie, GraphAPI
+from datetime import datetime, timedelta
 from flask import render_template, g, flash, session, url_for, redirect, request
 from config import FB_APP_ID, FB_APP_NAME, FB_APP_SECRET
 from forms import ProfileForm, EventForm
@@ -55,11 +56,15 @@ def add_event():
     db.session.add(event)
     db.session.commit()
     print event.id
+    user = models.User.query.get(g.user['id'])
+    event_req = models.EventSubscription(user=user, event=event)
+    db.session.add(event_req)
+    db.session.commit()
     flash("Event successfully created")
     return redirect(url_for("event", id=event.id))
   return render_template("add_event.html", app_id=FB_APP_ID, name=FB_APP_NAME, user = g.user, form=form) 
 
-@app.route('/event/<id>')
+@app.route('/event/<int:id>')
 def event(id):
   if id is None:
     return redirect(url_for('index'))
@@ -75,6 +80,31 @@ def logout():
   """
   session.pop('user', None)
   return redirect(url_for('index'))
+
+@app.route('/attend/<int:event_id>')
+def attend(event_id):
+  """
+  models.EventSubscription.query.filter(.timestamp_publication <=
+  sqlalchemy.sql.expression.current_timestamp()
+              )
+  """
+  event = models.Event.query.get(event_id)
+  user = models.User.query.get(g.user['id'])
+  updated_sub = models.EventSubscription.query.filter_by(event=event, user=user).first()
+  updated_sub.signups += 1
+  db.session.add(updated_sub)
+  db.session.commit()
+
+  now = datetime.utcnow()
+  past = now-timedelta(minutes=event.wait_time)
+  results = models.EventSubscription.query.filter_by(event=event).filter(models.EventSubscription.updated >= past).all()
+
+
+
+@app.route('/add_to_event/<int:user_id>')
+def add_to_event(user_id):
+  pass
+
 
 @app.before_request
 def get_current_user():

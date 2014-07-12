@@ -15,7 +15,7 @@ class Event(db.Model):
   users_subscribed = db.relationship('EventSubscription', backref='event', lazy='dynamic')
 
 class User(db.Model):
-  id = db.Column(db.String, primary_key=True)
+  id = db.Column(db.Integer, primary_key=True)
   created = db.Column(db.DateTime, default=datetime.utcnow)
   updated = db.Column(db.DateTime, default=datetime.utcnow,
                       onupdate=datetime.utcnow)
@@ -27,8 +27,12 @@ class User(db.Model):
   event_subscriptions = db.relationship('EventSubscription', backref='user',lazy='dynamic')
 
 class EventSubscription(db.Model):
-  id = db.Column(db.String, primary_key=True)
+  id = db.Column(db.Integer, primary_key=True)
   created = db.Column(db.DateTime, default=datetime.utcnow)
+  updated = db.Column(db.DateTime, default=datetime.utcnow,
+                      onupdate=datetime.utcnow)
+  attending = db.Column(db.SmallInteger, default=0)
   user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
   event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+  access_count = db.Column(db.Integer)
 
