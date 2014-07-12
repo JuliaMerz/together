@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, TextAreaField, IntegerField
+from wtforms import TextField, TextAreaField, IntegerField, BooleanField
 
 class ProfileForm(Form):
   email = TextField('email')
@@ -13,3 +13,4 @@ class EventForm(Form):
   pre_delay = IntegerField('pre_delay')
   required_people = IntegerField('required_people')
   description = TextAreaField('description')
+  public = BooleanField('public')

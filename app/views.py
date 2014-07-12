@@ -19,10 +19,14 @@ def index():
       g.first_time = False
       return redirect(url_for("profile"))
     user = models.User.query.get(g.user['id'])
-    results = models.EventSubscription.query.filter_by(user=user).all()
+    results = models.EventSubscription.query.filter_by(user=user)
+    public = models.Event.query.filter_by(public=1).all()
     events = []
     for result in results:
-      events.append(models.Event.query.get(result.event.id))
+      event = models.Event.query.get(result.event.id)
+      if event.public==0:
+        events.append(event)
+    events = events + public
     print events
     events.sort(key=lambda x: x.happened_count)
       
@@ -67,10 +71,13 @@ def add_event():
     pre_delay = form.pre_delay.data
     required_people = form.required_people.data
     description = form.description.data
-    event = models.Event(what=what, where=where, length=length, wait_time=wait_time, pre_delay=pre_delay, required_people=required_people, description=description)
+    if form.public.data:
+      public = 1
+    else:
+      public = 0
+    event = models.Event(what=what, where=where, length=length, wait_time=wait_time, pre_delay=pre_delay, required_people=required_people, description=description, public=public)
     db.session.add(event)
     db.session.commit()
-    print event.id
     user = models.User.query.get(g.user['id'])
     event_req = models.EventSubscription(user=user, event=event)
     db.session.add(event_req)

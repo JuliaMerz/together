@@ -31,6 +31,11 @@ h3 {
 #attend_button:hover {
   background-color: #bfffbf;
 }
+#details-title {
+  margin-top: 10px;
+  padding-bottom: 5px;
+  background-color: #ff9999;
+}
 
 #invite_button{
   background-color: #aaaaff;
@@ -71,4 +76,38 @@ form {
 
 .clickableRow {
   cursor: pointer;
+}
+
+.clickable {
+  cursor: pointer;
+}
+.menu {
+  padding: 40px 0px;
+  font-size: 20px;
+}
+@media (max-width: 800px) {
+.menu {
+  padding: 5px 0px;
+}
+}
+@media (min-width: 800px) {
+td {
+  padding: 15px 8px;
+}
+}
+.menu span {
+  vertical-align: center;
+}
+
+.container {
+  background-color: #f0f0f0;
+  padding-bottom: 500px;
+  padding: 0px 20px;
+}
+
+hr {
+  border-top: 1px solid #999;
+}
+table {
+  background-color: #ffffff;
 }

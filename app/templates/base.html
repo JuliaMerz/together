@@ -46,7 +46,23 @@
     </script>
 
     <div class="container">
-      <h1>Together</h1>
+      <div class="row">
+        <div data-url="/" class="clickable col-xs-12 col-md-4"><h1>Together</h1>
+        </div>
+        <div class="hidden-sm hidden-xs col-md-2">
+        </div>
+        <div data-url="/profile" style="padding-left: 20px;"class="clickable col-xs-4 col-md-2 menu">
+          <span>Profile</span>
+        </div>
+        <div data-url="/add_event" class="clickable col-xs-4 col-md-2 menu">
+          <span>New Event</span>
+        </div>
+        <div data-url="https://github.com/SebastianMerz/together" class="clickable col-xs-4 col-md-2 menu">
+          <span>GitHub</span>
+        </div>
+
+      </div>
+
       <hr>
       {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -103,6 +119,15 @@
       };
     </script>
     --!>
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+    {% endblock %}
+    <script>
+    jQuery(document).ready(function($) {
+      $(".clickable").click(function() {
+        console.log("wat")
+        window.document.location = $(this).attr("data-url");
+      });
+    });
+    </script>
   </body>
 </html>

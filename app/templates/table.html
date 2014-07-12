@@ -6,7 +6,10 @@
         <th>What</th>
         <th>Where</th>
         <th>Length</th>
-        <th>Timeout</th>
+        <th>Completed</th>
+        <th class="hidden-xs hidden-sm">Timemout</th>
+        <th class="hidden-xs hidden-sm">People Required</th>
+        <th class="hidden-xs hidden-sm">Pre-Event Delay</th>
       </tr>
     </thead>
     <tbody>
@@ -15,7 +18,10 @@
         <td>{{event.what}}</td>
         <td>{{event.where}}</td>
         <td>{{event.length}} minutes</td>
-        <td>{{event.wait_time}} minutes</td>
+        <td>{{event.happened_count}} times</td>
+        <td class="hidden-xs hidden-sm">{{event.wait_time}} minutes</td>
+          <td class="hidden-xs hidden-sm">{{event.required_people}} people</td>
+          <td class="hidden-xs hidden-sm">{{event.pre_delay}} minutes</td>
       </tr>
     {% endfor %}
     </tbody>

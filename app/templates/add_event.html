@@ -6,6 +6,12 @@ Add an event here!
   </p>
 <form class="width-controlled-wide" action="" method="post" name="edit" role="form">
   {{form.hidden_tag()}}
+  <div class="checkbox width-controlled-wide">
+    <label for="description">
+    <input id="public" name="public" type="checkbox" value="">
+    <strong>Public</strong>
+    </label>
+  </div>
   <div class="form-group width-controlled-wide">
     <label for="what">Name</label>
     <input name="what" type="text" class="form-control" id="what" placeholder="A concise description of the event.">
