@@ -2,10 +2,12 @@ from facebook import get_user_from_cookie, GraphAPI
 from twilio.rest import TwilioRestClient
 from datetime import datetime, timedelta
 from flask import render_template, g, flash, session, url_for, redirect, request
-from config import FB_APP_ID, FB_APP_NAME, FB_APP_SECRET, ACCOUNT_SID, AUTH_TOKEN, PHONE_NUMBER
+from config import FB_APP_ID, FB_APP_NAME, FB_APP_SECRET, ACCOUNT_SID, AUTH_TOKEN, PHONE_NUMBER, SENDGRID_USER, SENDGRID_PW
 from forms import ProfileForm, EventForm
 from app import app, db
 from app import models
+
+import sendgrid
 
 @app.route('/')
 def index():
@@ -16,7 +18,16 @@ def index():
     if g.first_time:
       g.first_time = False
       return redirect(url_for("profile"))
-    return render_template("base.html", app_id=FB_APP_ID, name=FB_APP_NAME)
+    user = models.User.query.get(g.user['id'])
+    results = models.EventSubscription.query.filter_by(user=user).all()
+    events = []
+    for result in results:
+      events.append(models.Event.query.get(result.event.id))
+    print events
+    events.sort(key=lambda x: x.happened_count)
+      
+
+    return render_template("table.html", events=events, app_id=FB_APP_ID, name=FB_APP_NAME)
   else:
     return render_template('fbsignin.html', app_id=FB_APP_ID, name=FB_APP_NAME)
 
@@ -44,6 +55,9 @@ def profile():
 
 @app.route('/add_event', methods=['GET', 'POST'])
 def add_event():
+  if g.user is None:
+    return redirect(url_for("index"))
+
   form = EventForm()
   if form.validate_on_submit():
     what = form.what.data
@@ -84,6 +98,9 @@ def logout():
 
 @app.route('/attend/<int:event_id>')
 def attend(event_id):
+  if g.user is None:
+    return redirect(url_for("index"))
+
   event = models.Event.query.get(event_id)
   user = models.User.query.get(g.user['id'])
   updated_sub = models.EventSubscription.query.filter_by(event=event, user=user).first()
@@ -95,23 +112,41 @@ def attend(event_id):
   past = now-timedelta(minutes=event.wait_time)
   results = models.EventSubscription.query.filter_by(event=event).filter(models.EventSubscription.updated >= past).filter(models.EventSubscription.signups >= 1).all()
   if len(results) >= event.required_people:
+    if event.happened_count is None:
+      event.happened_count = 0
+    event.happened_count += 1
+    db.session.add(event)
+    db.session.commit()
     for result in results:
+      body = event.what+ " will start at "+event.where+" in "+str(event.pre_delay)+" minutes!"
       if result.user.phone_number:
         "WHAT start at WHERE in WHEN minute!"
         client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
-        body = event.what+ " will start at "+event.where+" in "+str(event.pre_delay)+" minutes!"
         message = client.messages.create(to=result.user.phone_number, from_=PHONE_NUMBER, body=body)
 
       if result.user.email:
-        pass
+        sg = sendgrid.SendGridClient(SENDGRID_USER, SENDGRID_PW)
+
+        message = sendgrid.Mail()
+        to = result.user.name + " <"+result.user.email+">"
+        message.add_to(to)
+        message.set_subject("Event starting soon!")
+        message.set_html(body)
+        message.set_text(body)
+        message.set_from('Together App <no-reply@smerz.io>')
+        status, msg = sg.send(message)
 
   return 'OK'
 
-
-
 @app.route('/add_to_event/<int:event_id>/<int:user_id>')
 def add_to_event(event_id, user_id):
-  pass
+  user = models.User.query.get(user_id)
+  event = models.Event.query.get(event_id)
+  event_req = models.EventSubscription(user=user, event=event)
+  db.session.add(event_req)
+  db.session.commit()
+
+  return 'OK'
 
 
 @app.before_request

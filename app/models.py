@@ -10,7 +10,7 @@ class Event(db.Model):
   pre_delay = db.Column(db.Integer)
   required_people = db.Column(db.Integer)
   description = db.Column(db.Text)
-  happened_count = db.Column(db.Integer)
+  happened_count = db.Column(db.Integer, default=0)
   created = db.Column(db.DateTime, default=datetime.utcnow)
   users_subscribed = db.relationship('EventSubscription', backref='event', lazy='dynamic')
 

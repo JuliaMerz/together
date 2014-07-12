@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+    <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>What</th>
+        <th>Where</th>
+        <th>Length</th>
+        <th>Timeout</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for event in events %}
+    <tr class="clickableRow" data-swipe="{{url_for('attend', event_id=event.id)}}" data-url="{{url_for('event', id=event.id)}}">
+        <td>{{event.what}}</td>
+        <td>{{event.where}}</td>
+        <td>{{event.length}} minutes</td>
+        <td>{{event.wait_time}} minutes</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>{% endblock content%}
+
+{% block scripts %}
+<script type="text/javascript" src="/static/js/touchswipe.js"></script>
+<script>
+jQuery(document).ready(function($) {
+  $(".clickableRow").click(function() {
+    window.document.location = $(this).attr("data-url");
+  });
+});
+$(".clickableRow").swipe({
+  swipe:function(event, direction, distance, duration, fingerCount){
+  $.get($(this).attr("data-swipe"),function(data,status){
+          if(data == 'OK') { 
+            $("h1+hr").after('\ <div class="alert alert-info alert-dismissible fade in" role="alert">\
+                <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>\
+                You are signed up to attend. \
+              </div>');
+            }else{
+            alert("Data: " + data + "\nStatus: " + status);
+            }
+    });
+    }
+  ,
+    threshold:100
+});
+
+</script>
+{% endblock %}

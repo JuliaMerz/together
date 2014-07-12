@@ -1,6 +1,6 @@
 h1 {
   font-family: 'Bowlby One SC', cursive;
-  font-size:50px;
+  font-size:60px;
 }
 
 h2 {
@@ -54,3 +54,21 @@ form {
   max-width: 550px;
 }
 
+/*styles for Bootstrap Modal*/
+.modal {
+  border-radius: 0px !important;
+}
+
+.modal-body {
+    height: 102%;
+    overflow-y: scroll !important;
+}
+
+.modal-header {
+  color: white;
+  background-color: #3B5998;
+}
+
+.clickableRow {
+  cursor: pointer;
+}

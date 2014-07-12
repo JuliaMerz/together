@@ -1,4 +1,5 @@
 config.py
+db_repository/
 *.swp
 flask/
 *.pyc
