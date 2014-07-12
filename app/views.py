@@ -3,6 +3,7 @@ from flask import render_template, g, flash, session, url_for, redirect, request
 from config import FB_APP_ID, FB_APP_NAME, FB_APP_SECRET
 from forms import ProfileForm
 from app import app, db
+from app import models
 
 @app.route('/')
 @app.route('/index')
@@ -14,6 +15,7 @@ def index():
     if g.first_time:
       g.first_time = False
       return redirect(url_for("profile"))
+    return render_template("base.html", app_id=FB_APP_ID, name=FB_APP_NAME)
   else:
     return render_template('fbsignin.html', app_id=FB_APP_ID, name=FB_APP_NAME)
 
@@ -40,7 +42,17 @@ def profile():
     user['email_template'] = g.user.email
   if g.user.phone_number:
     user['phone_template'] = g.user.phone_number
-  return render_template("profile.html", user = user, form=form)
+  return render_template("profile.html", app_id=FB_APP_ID, name=FB_APP_NAME, user = user, form=form)
+@app.route('/logout')
+def logout():
+  """Log out the user from the application.
+
+  Log out the user from the application by removing them from the
+  session.  Note: this does not log the user out of Facebook - this is done
+  by the JavaScript SDK.
+  """
+  session.pop('user', None)
+  return redirect(url_for('index'))
 
 @app.before_request
 def get_current_user():
@@ -57,9 +69,12 @@ def get_current_user():
 
   # Set the user in the session dictionary as a global g.user and bail out
   # of this function early.
+  g.first_time = False
+  g.user = None
   if session.get('user'):
     g.user = session.get('user')
     return
+
 
   # Attempt to get the short term access token for the current user.
   result = get_user_from_cookie(cookies=request.cookies, app_id=FB_APP_ID,
@@ -68,7 +83,7 @@ def get_current_user():
   # If there is no result, we assume the user is not logged in.
   if result:
     # Check to see if this user is already in our database.
-    user = User.query.filter(User.id == result['uid']).first()
+    user = models.User.query.filter(models.User.id == result['uid']).first()
 
     if not user:
       # Not an existing user so get info
@@ -76,7 +91,7 @@ def get_current_user():
       profile = graph.get_object('me')
 
       # Create the user and insert it into the database
-      user = User(id=str(profile['id']), name=profile['name'],
+      user = models.User(id=str(profile['id']), name=profile['name'],
                   profile_url=profile['link'],
                   access_token=result['access_token'])
       db.session.add(user)
@@ -86,9 +101,11 @@ def get_current_user():
       user.access_token = result['access_token']
 
     # Add the user to the current session
+    g.user = user
     session['user'] = dict(name=user.name, profile_url=user.profile_url,
-                           id=user.id, access_token=user.access_token)
+                           id=user.id, access_token=user.access_token,
+                           email=user.email, phone_number=user.phone_number)
 
   # Commit changes to the database and set the user as a global g.user
   db.session.commit()
-  g.user = session.get('user', None)
+  #g.user = session.get('user', None)

@@ -21,6 +21,30 @@
     <![endif]-->
   </head>
   <body>
+    <script type="text/javascript">
+      window.fbAsyncInit = function() {
+        FB.init({
+          appId      : '{{ app_id }}',
+          status     : true,
+          cookie     : true,
+          xfbml      : true
+      });
+
+      FB.Event.subscribe('auth.login', function(response) {
+        window.location = window.location;
+        });
+      };
+
+      // Load the SDK Asynchronously
+      (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "//connect.facebook.net/en_US/all.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
+    </script>
+
     <div class="container">
       <h1>Together</h1>
       {% block content %}
@@ -54,9 +78,17 @@
       </tbody>
 	</table>{% endblock content%}
     </div>
+        <a href="/logout" id="logout">Log out</a>
+
+    
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/static/js/bootstrap.min.js"></script>
+    <script>
+      document.getElementById('logout').onclick = function() {
+        FB.logout(function(response) { });
+      };
+    </script>
   </body>
 </html>
