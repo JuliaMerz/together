@@ -6,7 +6,6 @@ from app import app, db
 from app import models
 
 @app.route('/')
-@app.route('/index')
 def index():
   """
   If logged in, return main.html. Otherwise return signin.html
@@ -28,21 +27,18 @@ def profile():
     return redirect(url_for("index"))
 
   form = ProfileForm()
-  user = g.user
-  user = {"nickname":"Bob"}
   if form.validate_on_submit():
-    g.user.email = form.email.data
-    g.user.phone_number = form.phone_number.data
-    db.session.add(g.user)
+    user = models.User.query.get(g.user['id'])
+    user.email = form.email.data
+    user.phone_number = form.phone_number.data
+    print form.email.data
+    print form.phone_number.data
+    g.user['email'] = form.email.data
+    g.user['phone_number'] = form.phone_number.data
+    db.session.add(user)
     db.session.commit()
     flash('Your changes have been saved')
-  user['email_template'] = "Please enter your email address"
-  user['phone_template'] = "Please enter your phone number"
-  if g.user.email:
-    user['email_template'] = g.user.email
-  if g.user.phone_number:
-    user['phone_template'] = g.user.phone_number
-  return render_template("profile.html", app_id=FB_APP_ID, name=FB_APP_NAME, user = user, form=form)
+  return render_template("profile.html", app_id=FB_APP_ID, name=FB_APP_NAME, user = g.user, form=form)
 @app.route('/logout')
 def logout():
   """Log out the user from the application.
@@ -101,11 +97,10 @@ def get_current_user():
       user.access_token = result['access_token']
 
     # Add the user to the current session
-    g.user = user
     session['user'] = dict(name=user.name, profile_url=user.profile_url,
                            id=user.id, access_token=user.access_token,
                            email=user.email, phone_number=user.phone_number)
 
   # Commit changes to the database and set the user as a global g.user
   db.session.commit()
-  #g.user = session.get('user', None)
+  g.user = session.get('user', None)

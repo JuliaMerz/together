@@ -18,11 +18,11 @@
   {{form.hidden_tag()}}
   <div class="form-group width-controlled">
     <label for="email">Email address</label>
-    <input name="email" type="email" class="form-control" id="email" placeholder="{{user.email_template}}">
+    <input name="email" type="email" class="form-control" id="email" placeholder="Please enter your email" value="{{user.email}}">
   </div>
   <div class="form-group width-controlled">
     <label for="phone_number">Phone Number</label>
-    <input type="tel" name="phone_number" class="form-control" id="phone_number" placeholder="{{user.phone_template}}">
+    <input type="tel" name="phone_number" class="form-control" id="phone_number" placeholder="Please enter your phone number" value="{{user.phone_number}}">
   </div>
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
